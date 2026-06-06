@@ -214,8 +214,10 @@ bool reshade::ini_file::save()
 
 	// Flush stream to disk before updating last write time
 	_modified_at = std::filesystem::last_write_time(_path, ec);
+	if (ec || _modified_at < std::filesystem::file_time_type::clock::now())
+		_modified_at = std::filesystem::file_time_type::clock::now();
 
-	assert(!ec && std::filesystem::file_size(_path, ec) > 0);
+	assert(std::filesystem::file_size(_path, ec) > 0);
 
 	return true;
 }
